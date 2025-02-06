@@ -3,21 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Draw App</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+    <title>Mapas Disponibles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <style>
-        #map { height: 600px; }
+        body {
+            padding: 20px;
+        }
+        .map-list {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <button id="save">Guardar</button>
-    <button id="load">Cargar</button>
-    <button id="export">Exportar a GeoJSON</button>
+    <div class="container">
+        <h1 class="text-center">Mapas Disponibles</h1>
+        <button id="newMap" class="btn btn-primary">Crear Nuevo Mapa</button>
+        <div class="map-list">
+            <ul id="mapList" class="list-group"></ul>
+        </div>
+    </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
-    <script src="scripts.js"></script>
+    <script>
+        document.getElementById('newMap').addEventListener('click', function() {
+            window.location.href = 'mapa.html';
+        });
+
+        fetch('list_maps.php')
+            .then(response => response.json())
+            .then(data => {
+                const mapList = document.getElementById('mapList');
+                data.forEach(map => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `<a href="mapa.html?mapa=${map}">${map}</a>`;
+                    mapList.appendChild(listItem);
+                });
+            });
+    </script>
 </body>
 </html>

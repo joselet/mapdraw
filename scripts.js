@@ -25,6 +25,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     map.addControl(drawControl);
 
+    function updateGeoJSON() {
+        var geojson = drawnItems.toGeoJSON();
+        var geojsonContent = document.getElementById('geojsonContent');
+        geojsonContent.innerHTML = "GEOJSON<br><pre>" + JSON.stringify(geojson, null, 2) + "</pre>";
+
+        // var drawnItemsStructure = '';
+        // drawnItems.eachLayer(function(layer) {
+        //     drawnItemsStructure += JSON.stringify(layer.toGeoJSON(), null, 2) + '\n';
+        // });
+        // geojsonContent.innerHTML += '<pre>\n\n<br>DRAWNITEMS<br>' + drawnItemsStructure + '</pre>';
+    }
+
     map.on(L.Draw.Event.CREATED, function (event) {
         var layer = event.layer;
         var descripcion = prompt("Introduce una descripción:");
@@ -35,28 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
         layer.feature.properties.estilo = estilo;
 
         drawnItems.addLayer(layer);
+        updateGeoJSON();
+    });
+
+    map.on(L.Draw.Event.EDITED, function () {
+        updateGeoJSON();
+    });
+
+    map.on(L.Draw.Event.DELETED, function () {
+        updateGeoJSON();
     });
 
     document.getElementById('save').addEventListener('click', function() {
         var geojson = drawnItems.toGeoJSON();
+        var mapTitle = document.getElementById('mapTitle').value;
+        
+        geojson.features.forEach(function(feature) {
+            feature.properties.mapa = mapTitle;
+        });
+
         console.log(JSON.stringify(geojson, null, 2)); // Inspecciona el GeoJSON en la consola con formato legible
-
-        // var geojson_generada = {
-        //     type: "FeatureCollection",
-        //     features: []
-        // };
-
-        // drawnItems.eachLayer(function(layer) {
-        //     if (layer.toGeoJSON) {
-        //         var feature = layer.toGeoJSON();
-        //         feature.properties = feature.properties || {};
-        //         feature.properties.descripcion = layer.feature.properties.descripcion;
-        //         feature.properties.estilo = layer.feature.properties.estilo;
-        //         geojson_generada.features.push(feature);
-        //     }
-        // });
-
-        // console.log(JSON.stringify(geojson_generada, null, 2)); // Inspecciona el GeoJSON generado en la consola con formato legible
 
         fetch('save.php', {
             method: 'POST',
@@ -77,8 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (feature.properties && feature.properties.descripcion) {
                             layer.bindPopup(feature.properties.descripcion);
                         }
+                        drawnItems.addLayer(layer);
                     }
-                }).addTo(drawnItems);
+                });
+                updateGeoJSON();
             });
     });
 

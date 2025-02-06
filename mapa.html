@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Draw App</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="mapa.css">
+</head>
+<body>
+    <input type="text" id="mapTitle" class="form-control map-title" placeholder="Título del mapa">
+    <div id="map"></div>
+    <div class="map-buttons">
+        <button id="save" class="btn btn-success">Guardar</button>
+        <button id="load" class="btn btn-info">Cargar</button>
+        <button id="export" class="btn btn-warning">Exportar a GeoJSON</button>
+    </div>
+    <div class="geojson-container" id="geojsonContainer" style="width: 10px;">
+        <div class="geojson-line"></div>
+        <div class="geojson-tab" id="geojsonTab">&lt;</div>
+        <div class="geojson-content" id="geojsonContent">Hola</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mapa = urlParams.get('mapa');
+            if (mapa) {
+                document.getElementById('mapTitle').value = mapa;
+                document.getElementById('load').click();
+            }
+
+            const geojsonContainer = document.getElementById('geojsonContainer');
+            const geojsonTab = document.getElementById('geojsonTab');
+            let lastExpandedWidth = 400; // Default expanded width
+            // desplegar y plegar el contenedor de geojson
+            geojsonTab.addEventListener('click', function() {
+                if (geojsonContainer.style.width === '10px') {
+                    geojsonContainer.style.width = lastExpandedWidth + 'px';
+                    geojsonTab.innerHTML = '&gt;';
+                } else {
+                    lastExpandedWidth = geojsonContainer.style.width.replace('px', '');
+                    geojsonContainer.style.width = '10px';
+                    geojsonTab.innerHTML = '&lt;';
+                }
+            });
+            // redimensionar el contenedor de geojson
+            let isResizing = false;
+            geojsonContainer.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+            });
+
+            function resize(e) {
+                if (isResizing) {
+                    const newWidth = window.innerWidth - e.clientX;
+                    geojsonContainer.style.width = newWidth + 'px';
+                }
+            }
+
+            function stopResize() {
+                isResizing = false;
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+        });
+    </script>
+</body>
+</html>
