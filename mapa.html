@@ -18,7 +18,7 @@
         <button id="export" class="btn btn-warning">Exportar a GeoJSON</button>
     </div>
     <div class="geojson-container" id="geojsonContainer" style="width: 10px;">
-        <div class="geojson-line"></div>
+        <div class="geojson-sizer" id="geojsonContainerSizer"></div>
         <div class="geojson-tab" id="geojsonTab">&lt;</div>
         <div class="geojson-content" id="geojsonContent">Hola</div>
     </div>
@@ -37,6 +37,7 @@
 
             const geojsonContainer = document.getElementById('geojsonContainer');
             const geojsonTab = document.getElementById('geojsonTab');
+            const geojsonContainerSizer = document.getElementById('geojsonContainerSizer');
             let lastExpandedWidth = 400; // Default expanded width
             // desplegar y plegar el contenedor de geojson
             geojsonTab.addEventListener('click', function() {
@@ -51,7 +52,7 @@
             });
             // redimensionar el contenedor de geojson
             let isResizing = false;
-            geojsonContainer.addEventListener('mousedown', function(e) {
+            geojsonContainerSizer.addEventListener('mousedown', function(e) {
                 isResizing = true;
                 document.addEventListener('mousemove', resize);
                 document.addEventListener('mouseup', stopResize);
