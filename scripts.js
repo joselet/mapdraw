@@ -18,12 +18,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 showArea: true
             },
             marker: {},
-            polyline: {},
+            polyline: {
+                shapeOptions: {
+                    color: '#3388ff',
+                    weight: 4,
+                    opacity: 0.5,
+                    dashArray: '5, 5',
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }
+            },
             rectangle: {},
             circle: {}
         }
     });
     map.addControl(drawControl);
+
+    function addArrowheads(layer) {
+        var arrowHead = L.polylineDecorator(layer, {
+            patterns: [
+                {
+                    offset: '100%',
+                    repeat: 0,
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 15,
+                        polygon: false,
+                        pathOptions: {
+                            stroke: true,
+                            color: '#3388ff',
+                            weight: 2,
+                            opacity: 0.5
+                        }
+                    })
+                }
+            ]
+        }).addTo(map);
+        return arrowHead;
+    }
 
     function updateGeoJSON() {
         var geojson = drawnItems.toGeoJSON();
@@ -47,6 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
         layer.feature.properties.estilo = estilo;
 
         drawnItems.addLayer(layer);
+        if (layer instanceof L.Polyline) {
+            addArrowheads(layer);
+        }
         updateGeoJSON();
     });
 
@@ -88,6 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             layer.bindPopup(feature.properties.descripcion);
                         }
                         drawnItems.addLayer(layer);
+                        if (layer instanceof L.Polyline) {
+                            addArrowheads(layer);
+                        }
                     }
                 });
                 updateGeoJSON();
