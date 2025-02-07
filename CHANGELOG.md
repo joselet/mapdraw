@@ -3,10 +3,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
+- manejo de datos y estilos de los elementos
+
+## [0.0.3] - 2025-02-07
+### Changed
 - Al click en el botón cargar: cargar elementos de X mapa (a elegir por el usuario)
 - Al iniciar un mapa ya existente, la llamada a la función cargar no debería ir a buscar el botón cargar. sinó simplemente cargar de el mapa solicitado.
 
-## [0.0.2] - 2025-02-02
+## [0.0.2] - 2025-02-06
 ### Changed
 - Estructura de base de datos. Ahora almacena un campo para controlar el identificador de mapa.
 ### Added

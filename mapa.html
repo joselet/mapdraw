@@ -33,7 +33,7 @@
             const mapa = urlParams.get('mapa');
             if (mapa) {
                 document.getElementById('mapTitle').value = mapa;
-                document.getElementById('load').click();
+                cargarMapa(mapa); // Call cargarMapa directly
             }
 
             const geojsonContainer = document.getElementById('geojsonContainer');

@@ -69,3 +69,7 @@ html, body {
     z-index: 1101;
     cursor: ew-resize;
 }
+
+.list-group {
+    cursor: pointer;
+}
