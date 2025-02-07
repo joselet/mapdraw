@@ -23,7 +23,7 @@ html, body {
     flex-direction: column;
     gap: 10px;
 }
-.geojson-container {
+.menu-container {
     position: absolute;
     top: 0;
     right: 0;
@@ -35,14 +35,14 @@ html, body {
     resize: horizontal;
     overflow: auto;
 }
-.geojson-content {
+.menu-content {
     padding: 5px;
     margin-left: 10px;
     height: 100%;
     overflow-y: auto;
     background: white;
 }
-.geojson-tab {
+.menu-tab {
     position: absolute;
     top: 50%;
     left: 0px;
@@ -58,7 +58,7 @@ html, body {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
-.geojson-sizer {
+.menu-sizer {
     position: absolute;
     top: 0;
     left: 6px;
@@ -72,4 +72,26 @@ html, body {
 
 .list-group {
     cursor: pointer;
+}
+
+.menu-header div {
+    cursor: pointer;
+    padding: 10px;
+    display: inline-block;
+    background: lightgrey;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+}
+
+.menu-header div.active {
+    background: white;
+    border-bottom: 2px solid #501717;
+}
+
+.menu-body {
+    display: none;
+}
+
+.menu-body.active {
+    display: block;
 }

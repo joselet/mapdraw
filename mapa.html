@@ -17,61 +17,26 @@
         <button id="load" class="btn btn-info">Cargar</button>
         <button id="export" class="btn btn-warning">Exportar a GeoJSON</button>
     </div>
-    <div class="geojson-container" id="geojsonContainer" style="width: 10px;">
-        <div class="geojson-sizer" id="geojsonContainerSizer"></div>
-        <div class="geojson-tab" id="geojsonTab">&lt;</div>
-        <div class="geojson-content" id="geojsonContent">Hola</div>
+    <div class="menu-container" id="menuContainer" style="width: 10px;">
+        <div class="menu-sizer" id="menuContainerSizer"></div>
+        <div class="menu-tab" id="menuTab">&lt;</div>
+        <div class="menu-content" id="menuContent">
+            <div class="menu-header">
+                <div class="tabDatos" id="tabDatos">Datos</div>    
+                <div class="tabEstilo" id="tabEstilo">Estilo</div>    
+                <div class="tabGeojson" id="tabGeojson">GeoJSON</div>
+            </div>
+            <div class="menu-body" id="tabDatos-content">Datos</div>
+            <div class="menu-body" id="tabEstilo-content" style="display: none;">Estilo</div>
+            <div class="menu-body" id="tabGeojson-content" style="display: none;">GeoJSON</div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="https://unpkg.com/leaflet-polylinedecorator/dist/leaflet.polylineDecorator.js"></script>
-    <script src="scripts.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const mapa = urlParams.get('mapa');
-            if (mapa) {
-                document.getElementById('mapTitle').value = mapa;
-                cargarMapa(mapa); // Call cargarMapa directly
-            }
-
-            const geojsonContainer = document.getElementById('geojsonContainer');
-            const geojsonTab = document.getElementById('geojsonTab');
-            const geojsonContainerSizer = document.getElementById('geojsonContainerSizer');
-            let lastExpandedWidth = 400; // Default expanded width
-            // desplegar y plegar el contenedor de geojson
-            geojsonTab.addEventListener('click', function() {
-                if (geojsonContainer.style.width === '10px') {
-                    geojsonContainer.style.width = lastExpandedWidth + 'px';
-                    geojsonTab.innerHTML = '&gt;';
-                } else {
-                    lastExpandedWidth = geojsonContainer.style.width.replace('px', '');
-                    geojsonContainer.style.width = '10px';
-                    geojsonTab.innerHTML = '&lt;';
-                }
-            });
-            // redimensionar el contenedor de geojson
-            let isResizing = false;
-            geojsonContainerSizer.addEventListener('mousedown', function(e) {
-                isResizing = true;
-                document.addEventListener('mousemove', resize);
-                document.addEventListener('mouseup', stopResize);
-            });
-
-            function resize(e) {
-                if (isResizing) {
-                    const newWidth = window.innerWidth - e.clientX;
-                    geojsonContainer.style.width = newWidth + 'px';
-                }
-            }
-
-            function stopResize() {
-                isResizing = false;
-                document.removeEventListener('mousemove', resize);
-                document.removeEventListener('mouseup', stopResize);
-            }
-        });
-    </script>
+    <script src="map.js"></script>
+    <script src="menu.js"></script>
+    
 </body>
 </html>

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 - gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
 - manejo de datos y estilos de los elementos
 
+## [0.0.4] - 2025-02-07
+### Added
+- Mejorado el menú de la derecha para soportar diferentes opciones
+
 ## [0.0.3] - 2025-02-07
 ### Changed
 - Al click en el botón cargar: cargar elementos de X mapa (a elegir por el usuario)

@@ -16,13 +16,13 @@ if (!empty($data['features'])) {
     // Insertar nuevos datos
     foreach ($data['features'] as $feature) {
         $geometry = json_encode($feature['geometry']);
-        $descripcion = $feature['properties']['descripcion'] ?? '';
+        $datos = $feature['properties']['datos'] ?? '';
         $estilo = $feature['properties']['estilo'] ?? '';
 
-        $stmt = $conn->prepare("INSERT INTO map_features (mapa, descripcion, estilo, geom) VALUES (:mapa, :descripcion, :estilo, ST_GeomFromGeoJSON(:geometry))");
+        $stmt = $conn->prepare("INSERT INTO map_features (mapa, datos, estilo, geom) VALUES (:mapa, :datos, :estilo, ST_GeomFromGeoJSON(:geometry))");
         $stmt->execute([
             'mapa' => $mapa,
-            'descripcion' => $descripcion,
+            'datos' => $datos,
             'estilo' => $estilo,
             'geometry' => $geometry
         ]);

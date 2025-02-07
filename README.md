@@ -5,6 +5,6 @@ CREATE TABLE map_features (
     mapa TEXT,
     geom GEOMETRY,
     estilo TEXT,
-    descripcion TEXT
+    datos TEXT
 );
 ```

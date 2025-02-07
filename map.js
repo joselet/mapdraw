@@ -58,23 +58,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateGeoJSON() {
         var geojson = drawnItems.toGeoJSON();
-        var geojsonContent = document.getElementById('geojsonContent');
+        var geojsonContent = document.getElementById('tabGeojson-content');
         geojsonContent.innerHTML = "GEOJSON<br><pre>" + JSON.stringify(geojson, null, 2) + "</pre>";
-
-        // var drawnItemsStructure = '';
-        // drawnItems.eachLayer(function(layer) {
-        //     drawnItemsStructure += JSON.stringify(layer.toGeoJSON(), null, 2) + '\n';
-        // });
-        // geojsonContent.innerHTML += '<pre>\n\n<br>DRAWNITEMS<br>' + drawnItemsStructure + '</pre>';
     }
 
     map.on(L.Draw.Event.CREATED, function (event) {
         var layer = event.layer;
-        var descripcion = prompt("Introduce una descripción:");
+        var datos = prompt("Introduce una descripción:");
         var estilo = prompt("Introduce un estilo (color, etc.):");
 
         layer.feature = layer.feature || { type: "Feature", properties: {} };
-        layer.feature.properties.descripcion = descripcion;
+        layer.feature.properties.datos = datos;
         layer.feature.properties.estilo = estilo;
 
         drawnItems.addLayer(layer);
@@ -119,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
-                        if (feature.properties && feature.properties.descripcion) {
-                            layer.bindPopup(feature.properties.descripcion);
+                        if (feature.properties && feature.properties.datos) {
+                            layer.bindPopup(feature.properties.datos);
                         }
                         drawnItems.addLayer(layer);
                         if (layer instanceof L.Polyline) {
