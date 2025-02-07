@@ -62,21 +62,111 @@ document.addEventListener('DOMContentLoaded', function() {
         geojsonContent.innerHTML = "GEOJSON<br><pre>" + JSON.stringify(geojson, null, 2) + "</pre>";
     }
 
+    function populateDatosContent(layer) {
+        var datosContent = document.getElementById('tabDatos-content');
+        datosContent.innerHTML = ''; // Clear existing content
+
+        var properties = layer.feature.properties.datos || {};
+        for (var key in properties) {
+            if (properties.hasOwnProperty(key)) {
+                var div = document.createElement('div');
+                div.className = 'form-group';
+                div.innerHTML = `
+                    <div class="col">
+                        <input type="text" class="form-control" value="${key}" data-key="${key}" data-type="key">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" value="${properties[key]}" data-key="${key}" data-type="value">
+                    </div>
+                    <button class="btn btn-delete">-</button>
+                `;
+                datosContent.appendChild(div);
+
+                div.querySelector('.btn-delete').addEventListener('click', function() {
+                    delete layer.feature.properties.datos[key];
+                    populateDatosContent(layer);
+                    updateGeoJSON();
+                });
+            }
+        }
+        datosContent.appendChild(document.createElement('hr'));
+        datosContent.append(document.createTextNode('Añadir:'));
+        // Add new field form
+        var newFieldDiv = document.createElement('div');
+        newFieldDiv.className = 'form-group';
+        newFieldDiv.innerHTML = `
+            <div class="col">
+                <input type="text" class="form-control" id="newFieldName" placeholder="Nombre del campo">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="newFieldValue" placeholder="Valor del campo">
+            </div>
+            <button class="btn btn-add">+</button>
+        `;
+        datosContent.appendChild(newFieldDiv);
+
+        document.querySelector('.btn-add').addEventListener('click', function() {
+            var fieldName = document.getElementById('newFieldName').value;
+            var fieldValue = document.getElementById('newFieldValue').value;
+            if (fieldName && fieldValue) {
+                layer.feature.properties.datos[fieldName] = fieldValue;
+                populateDatosContent(layer);
+                updateGeoJSON();
+            }
+        });
+
+        // Update layer properties on input change
+        datosContent.querySelectorAll('input[data-key]').forEach(input => {
+            input.addEventListener('input', function() {
+                var key = this.getAttribute('data-key');
+                var type = this.getAttribute('data-type');
+                if (type === 'key') {
+                    var newKey = this.value;
+                    layer.feature.properties.datos[newKey] = layer.feature.properties.datos[key];
+                    delete layer.feature.properties.datos[key];
+                    populateDatosContent(layer);
+                } else {
+                    layer.feature.properties.datos[key] = this.value;
+                }
+                updateGeoJSON();
+            });
+        });
+    }
+
     map.on(L.Draw.Event.CREATED, function (event) {
         var layer = event.layer;
-        var datos = prompt("Introduce una descripción:");
-        var estilo = prompt("Introduce un estilo (color, etc.):");
-
-        layer.feature = layer.feature || { type: "Feature", properties: {} };
-        layer.feature.properties.datos = datos;
-        layer.feature.properties.estilo = estilo;
+        layer.feature = layer.feature || { type: "Feature", properties: { datos: {} } };
 
         drawnItems.addLayer(layer);
         if (layer instanceof L.Polyline) {
             addArrowheads(layer);
         }
         updateGeoJSON();
+
+        // Add click event for markers
+        // if (layer instanceof L.Marker) {
+        //     layer.on('click', function() {
+        //         populateDatosContent(layer);
+        //     });
+        // }
+
+        layer.on('click', function() {
+            populateDatosContent(layer);
+        });
     });
+
+    // map.on('click', function(e) {
+    //     var clickedOnLayer = false;
+    //     map.eachLayer(function(layer) {
+    //         if (layer instanceof L.Path && layer.getBounds().contains(e.latlng)) {
+    //             populateDatosContent(layer);
+    //             clickedOnLayer = true;
+    //         }
+    //     });
+    //     if (!clickedOnLayer) {
+    //         document.getElementById('tabDatos-content').innerHTML = ''; // Clear data content
+    //     }
+    // });
 
     map.on(L.Draw.Event.EDITED, function () {
         updateGeoJSON();
@@ -113,13 +203,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
-                        if (feature.properties && feature.properties.datos) {
-                            layer.bindPopup(feature.properties.datos);
-                        }
                         drawnItems.addLayer(layer);
                         if (layer instanceof L.Polyline) {
                             addArrowheads(layer);
                         }
+                        // Añadir click event
+                        layer.on('click', function() {
+                            populateDatosContent(layer);
+                        });
                     }
                 });
                 updateGeoJSON();

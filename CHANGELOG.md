@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
-- manejo de datos y estilos de los elementos
+- manejo de estilos de los elementos
+
+## [0.0.5] - 2025-02-07
+### Added
+- Añadida la opción de gestión de datos en el menú de la derecha.
+- Al grabar y al cargar, se gestionan estos datos correctamente.
 
 ## [0.0.4] - 2025-02-07
 ### Added

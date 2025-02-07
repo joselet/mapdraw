@@ -95,3 +95,50 @@ html, body {
 .menu-body.active {
     display: block;
 }
+
+
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.form-group .col {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.form-group .btn-add {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.form-group .btn-add:hover {
+    background: #218838;
+}
+
+.form-group .btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.form-group .btn-delete:hover {
+    background: #c82333;
+}
+
+.form-group .col input[data-type="key"] {
+    border: none;
+    background: #f0f0f0;
+    padding: 5px;
+}
+
+.form-group .col input[data-type="key"]:focus {
+    outline: none;
+}
