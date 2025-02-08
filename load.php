@@ -16,7 +16,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'geometry' => json_decode($row['geometry']),
         'properties' => [
             'datos' => json_decode($row['datos']),
-            'estilo' => $row['estilo'],
+            'estilo' => json_decode($row['estilo']),
             'mapa' => $row['mapa']
         ]
     ];

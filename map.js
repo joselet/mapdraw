@@ -133,9 +133,151 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function populateEstiloContent(layer) {
+        var estiloContent = document.getElementById('tabEstilo-content');
+        estiloContent.innerHTML = ''; // Clear existing content
+
+        var properties = layer.feature.properties.estilo || {};
+        var styleOptions = layer.options || {};
+
+        // Add style options based on layer type
+        if (layer instanceof L.Marker) {
+            var iconUrl = properties.iconUrl || styleOptions.icon.options.iconUrl || '';
+            var div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label>Icon URL</label>
+                <input type="text" class="form-control" value="${iconUrl}" data-key="iconUrl">
+            `;
+            estiloContent.appendChild(div);
+
+            div.querySelector('input').addEventListener('input', function() {
+                var key = this.getAttribute('data-key');
+                properties[key] = this.value;
+                layer.setIcon(L.icon({ iconUrl: this.value }));
+                updateGeoJSON();
+            });
+        } else if (layer instanceof L.Polyline) {
+            var color = properties.color || styleOptions.color || '#3388ff';
+            var weight = properties.weight || styleOptions.weight || 4;
+            var opacity = properties.opacity || styleOptions.opacity || 0.5;
+            var dashArray = properties.dashArray || styleOptions.dashArray || '5, 5';
+
+            var div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label>Color</label>
+                <input type="color" class="form-control" value="${color}" data-key="color">
+                <label>Weight</label>
+                <input type="number" class="form-control" value="${weight}" data-key="weight">
+                <label>Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity">
+                <label>Dash Array</label>
+                <input type="text" class="form-control" value="${dashArray}" data-key="dashArray">
+            `;
+            estiloContent.appendChild(div);
+
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', function() {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    layer.setStyle({
+                        color: properties.color,
+                        weight: properties.weight,
+                        opacity: properties.opacity,
+                        dashArray: properties.dashArray
+                    });
+                    updateGeoJSON();
+                });
+            });
+        } else if (layer instanceof L.Polygon) {
+            var color = properties.color || styleOptions.color || '#3388ff';
+            var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
+            var weight = properties.weight || styleOptions.weight || 4;
+            var opacity = properties.opacity || styleOptions.opacity || 0.5;
+            var fillOpacity = properties.fillOpacity || styleOptions.fillOpacity || 0.2;
+
+            var div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label>Border Color</label>
+                <input type="color" class="form-control" value="${color}" data-key="color">
+                <label>Fill Color</label>
+                <input type="color" class="form-control" value="${fillColor}" data-key="fillColor">
+                <label>Weight</label>
+                <input type="number" class="form-control" value="${weight}" data-key="weight">
+                <label>Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity">
+                <label>Fill Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${fillOpacity}" data-key="fillOpacity">
+            `;
+            estiloContent.appendChild(div);
+
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', function() {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    layer.setStyle({
+                        color: properties.color,
+                        fillColor: properties.fillColor,
+                        weight: properties.weight,
+                        opacity: properties.opacity,
+                        fillOpacity: properties.fillOpacity
+                    });
+                    updateGeoJSON();
+                });
+            });
+        } else if (layer instanceof L.Circle) {
+            var color = properties.color || styleOptions.color || '#3388ff';
+            var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
+            var weight = properties.weight || styleOptions.weight || 4;
+            var opacity = properties.opacity || styleOptions.opacity || 0.5;
+            var fillOpacity = properties.fillOpacity || styleOptions.fillOpacity || 0.2;
+            var radius = properties.radius || layer.getRadius() || 100;
+
+            var div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label>Border Color</label>
+                <input type="color" class="form-control" value="${color}" data-key="color">
+                <label>Fill Color</label>
+                <input type="color" class="form-control" value="${fillColor}" data-key="fillColor">
+                <label>Weight</label>
+                <input type="number" class="form-control" value="${weight}" data-key="weight">
+                <label>Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity">
+                <label>Fill Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${fillOpacity}" data-key="fillOpacity">
+                <label>Radius</label>
+                <input type="number" class="form-control" value="${radius}" data-key="radius">
+            `;
+            estiloContent.appendChild(div);
+
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', function() {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    layer.setStyle({
+                        color: properties.color,
+                        fillColor: properties.fillColor,
+                        weight: properties.weight,
+                        opacity: properties.opacity,
+                        fillOpacity: properties.fillOpacity
+                    });
+                    layer.setRadius(properties.radius);
+                    updateGeoJSON();
+                });
+            });
+        }
+
+        layer.feature.properties.estilo = properties;
+    }
+
     map.on(L.Draw.Event.CREATED, function (event) {
         var layer = event.layer;
-        layer.feature = layer.feature || { type: "Feature", properties: { datos: {} } };
+        layer.feature = layer.feature || { type: "Feature", properties: { datos: {}, estilo: {} } };
+        // mostrar en consola el tipo de elemento dibujado (instanceOf)
+        console.log(getTipo(layer));
 
         drawnItems.addLayer(layer);
         if (layer instanceof L.Polyline) {
@@ -143,15 +285,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         updateGeoJSON();
 
-        // Add click event for markers
-        // if (layer instanceof L.Marker) {
-        //     layer.on('click', function() {
-        //         populateDatosContent(layer);
-        //     });
-        // }
-
+        // Añadir click event
         layer.on('click', function() {
             populateDatosContent(layer);
+            populateEstiloContent(layer);
         });
     });
 
@@ -160,11 +297,13 @@ document.addEventListener('DOMContentLoaded', function() {
     //     map.eachLayer(function(layer) {
     //         if (layer instanceof L.Path && layer.getBounds().contains(e.latlng)) {
     //             populateDatosContent(layer);
+    //             populateEstiloContent(layer);
     //             clickedOnLayer = true;
     //         }
     //     });
     //     if (!clickedOnLayer) {
     //         document.getElementById('tabDatos-content').innerHTML = ''; // Clear data content
+    //         document.getElementById('tabEstilo-content').innerHTML = ''; // Clear style content
     //     }
     // });
 
@@ -210,6 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Añadir click event
                         layer.on('click', function() {
                             populateDatosContent(layer);
+                            populateEstiloContent(layer);
                         });
                     }
                 });
@@ -329,3 +469,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+function getTipo(layer){
+
+    
+        // Comprobamos el tipo con instanceof y verificamos propiedades adicionales
+        if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+            return('Polygon');
+        } else if (layer instanceof L.Polyline) {
+            return('Polyline');
+        } else if (layer instanceof L.Marker) {
+            return('Marker');
+        } else if (layer instanceof L.Circle) {
+            return('Circle');
+        } else if (layer instanceof L.CircleMarker) {
+            return('CircleMarker');
+        } else {
+            return('Unknown');
+        }
+    
+        // Para determinar si un Polyline es un polígono, verificamos si el primer y último punto son iguales
+        // if (layer instanceof L.Polyline) {
+        //     if (layer.getLatLngs().length > 2) {
+        //         const latLngs = layer.getLatLngs();
+        //         const firstPoint = latLngs[0];
+        //         const lastPoint = latLngs[latLngs.length - 1];
+        //         if (firstPoint.equals(lastPoint)) {
+        //             console.log('Polygon (closed Polyline)');
+        //         } else {
+        //             console.log('Polyline (open)');
+        //         }
+        //     }
+        // }
+  
+    
+}
