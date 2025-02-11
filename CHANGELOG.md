@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
-- manejo de estilos de los elementos
+- manejo de estilos de los elementos (resto de elementos)
+- gestión de estilo cuando un feature es un marker
+
+## [0.0.6] - 2025-02-11
+### Added
+- Los estilos de las líneas se gestionan en su propia pestaña y se genera el geojson correspondiente.
+- Al cargar el mapa, se aplican estilos.
 
 ## [0.0.5] - 2025-02-07
 ### Added

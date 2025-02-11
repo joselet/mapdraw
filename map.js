@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     weight: 4,
                     opacity: 0.5,
                     dashArray: '5, 5',
-                    lineCap: 'round',
+                    lineCap: 'square',
                     lineJoin: 'round'
                 }
             },
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function populateEstiloContent(layer) {
         var estiloContent = document.getElementById('tabEstilo-content');
-        estiloContent.innerHTML = ''; // Clear existing content
+        estiloContent.innerHTML = 'Adapta tu estilo'; // Clear existing content
 
         var properties = layer.feature.properties.estilo || {};
         var styleOptions = layer.options || {};
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (layer instanceof L.Marker) {
             var iconUrl = properties.iconUrl || styleOptions.icon.options.iconUrl || '';
             var div = document.createElement('div');
-            div.className = 'form-group';
+            div.className = 'form-estilo';
             div.innerHTML = `
                 <label>Icon URL</label>
                 <input type="text" class="form-control" value="${iconUrl}" data-key="iconUrl">
@@ -162,31 +162,66 @@ document.addEventListener('DOMContentLoaded', function() {
             var weight = properties.weight || styleOptions.weight || 4;
             var opacity = properties.opacity || styleOptions.opacity || 0.5;
             var dashArray = properties.dashArray || styleOptions.dashArray || '5, 5';
+            var lineCap = properties.lineCap || styleOptions.lineCap || 'round';
+            var lineJoin = properties.lineJoin || styleOptions.lineJoin || 'round';
 
             var div = document.createElement('div');
-            div.className = 'form-group';
+            div.className = 'form-estilo';
             div.innerHTML = `
                 <label>Color</label>
-                <input type="color" class="form-control" value="${color}" data-key="color">
+                <input type="color" class="form-control" value="${color}" data-key="color" id="color"><br>
                 <label>Weight</label>
-                <input type="number" class="form-control" value="${weight}" data-key="weight">
+                <input type="number" class="form-control" value="${weight}" data-key="weight" id="weight"><br>
                 <label>Opacity</label>
-                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity">
+                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity" id="opacity"><br>
                 <label>Dash Array</label>
-                <input type="text" class="form-control" value="${dashArray}" data-key="dashArray">
+                <input type="text" class="form-control" value="${dashArray}" data-key="dashArray" id="dashArray"><br>
+                <label>Line Cap</label>
+                <select class="form-control" data-key="lineCap" id="lineCap">
+                    <option value="${lineCap}" selected>${lineCap}</option>
+                    <option value="butt">Butt</option>
+                    <option value="round">Round</option>
+                    <option value="square">Square</option>
+                </select><br>
+                <label>Line Join</label>
+                <select class="form-control" data-key="lineJoin" id="lineJoin">
+                    <option value="${lineJoin}" selected>${lineJoin}</option>
+                    <option value="miter">Miter</option>
+                    <option value="round">Round</option>
+                    <option value="bevel">Bevel</option>
+                </select>
             `;
             estiloContent.appendChild(div);
-
+            div.querySelector('select').addEventListener('change', function() {
+                var key = this.getAttribute('data-key');
+                properties[key] = this.value;
+                var style =({
+                    color: properties.color || styleOptions.color,
+                    weight: properties.weight || styleOptions.weight,
+                    opacity: properties.opacity || styleOptions.opacity,
+                    dashArray: properties.dashArray|| styleOptions.dashArray,
+                    lineCap: properties.lineCap || styleOptions.lineCap,
+                    lineJoin: properties.lineJoin || styleOptions.lineJoin
+                });
+                layer.setStyle(style);
+                layer.feature.properties.estilo = style;
+                updateGeoJSON();
+            });
             div.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', function() {
                     var key = this.getAttribute('data-key');
                     properties[key] = this.value;
-                    layer.setStyle({
-                        color: properties.color,
-                        weight: properties.weight,
-                        opacity: properties.opacity,
-                        dashArray: properties.dashArray
+                    console.log (this.value);
+                    var style =({
+                        color: properties.color || styleOptions.color,
+                        weight: properties.weight || styleOptions.weight,
+                        opacity: properties.opacity || styleOptions.opacity,
+                        dashArray: properties.dashArray|| styleOptions.dashArray,
+                        lineCap: properties.lineCap || styleOptions.lineCap,
+                        lineJoin: properties.lineJoin || styleOptions.lineJoin
                     });
+                    layer.setStyle(style);
+                    layer.feature.properties.estilo = style;
                     updateGeoJSON();
                 });
             });
@@ -198,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var fillOpacity = properties.fillOpacity || styleOptions.fillOpacity || 0.2;
 
             var div = document.createElement('div');
-            div.className = 'form-group';
+            div.className = 'form-estilo';
             div.innerHTML = `
                 <label>Border Color</label>
                 <input type="color" class="form-control" value="${color}" data-key="color">
@@ -236,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var radius = properties.radius || layer.getRadius() || 100;
 
             var div = document.createElement('div');
-            div.className = 'form-group';
+            div.className = 'form-estilo';
             div.innerHTML = `
                 <label>Border Color</label>
                 <input type="color" class="form-control" value="${color}" data-key="color">
@@ -281,7 +316,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         drawnItems.addLayer(layer);
         if (layer instanceof L.Polyline) {
-            addArrowheads(layer);
+            // crear flechas
+            // addArrowheads(layer);
         }
         updateGeoJSON();
 
@@ -343,8 +379,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
                         drawnItems.addLayer(layer);
+                        style=layer.feature.properties.estilo ;
+                        layer.setStyle(style);
                         if (layer instanceof L.Polyline) {
-                            addArrowheads(layer);
+                            // crear flechas
+                            // addArrowheads(layer);
                         }
                         // Añadir click event
                         layer.on('click', function() {
