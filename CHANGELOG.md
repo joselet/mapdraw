@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
 - manejo de estilos de los elementos (resto de elementos)
-- gestión de estilo cuando un feature es un marker
+- añadir al estilo del marker la posición del ancla.
+- cargar servicios WMS en background
+- cambiar el sistema de coordenadas
+- Almacenar los settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...)
+
+## [0.0.8] - 2025-02-12
+### Changed
+- Estilo de markers.
+- Separamos ficheros js para tenerlos por temas.
 
 ## [0.0.7] - 2025-02-12
 ### Changed
