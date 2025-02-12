@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 - manejo de estilos de los elementos (resto de elementos)
 - gestión de estilo cuando un feature es un marker
 
+## [0.0.7] - 2025-02-12
+### Changed
+- Estilo de polígono revisado.
+
 ## [0.0.6] - 2025-02-11
 ### Added
 - Los estilos de las líneas se gestionan en su propia pestaña y se genera el geojson correspondiente.

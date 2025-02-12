@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var map = L.map('map').setView([40.4168, -3.7038], 6); // Centro en España
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 datosContent.appendChild(div);
 
-                div.querySelector('.btn-delete').addEventListener('click', function() {
+                div.querySelector('.btn-delete').addEventListener('click', function () {
                     delete layer.feature.properties.datos[key];
                     populateDatosContent(layer);
                     updateGeoJSON();
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         datosContent.appendChild(newFieldDiv);
 
-        document.querySelector('.btn-add').addEventListener('click', function() {
+        document.querySelector('.btn-add').addEventListener('click', function () {
             var fieldName = document.getElementById('newFieldName').value;
             var fieldValue = document.getElementById('newFieldValue').value;
             if (fieldName && fieldValue) {
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update layer properties on input change
         datosContent.querySelectorAll('input[data-key]').forEach(input => {
-            input.addEventListener('input', function() {
+            input.addEventListener('input', function () {
                 var key = this.getAttribute('data-key');
                 var type = this.getAttribute('data-type');
                 if (type === 'key') {
@@ -151,13 +151,15 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             estiloContent.appendChild(div);
 
-            div.querySelector('input').addEventListener('input', function() {
+            div.querySelector('input').addEventListener('input', function () {
                 var key = this.getAttribute('data-key');
                 properties[key] = this.value;
                 layer.setIcon(L.icon({ iconUrl: this.value }));
                 updateGeoJSON();
             });
-        } else if (layer instanceof L.Polyline) {
+        } else if (layer instanceof L.Polygon) {
+            var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
+            var fillOpacity = properties.fillOpacity || styleOptions.fillOpacity || 0.2;
             var color = properties.color || styleOptions.color || '#3388ff';
             var weight = properties.weight || styleOptions.weight || 4;
             var opacity = properties.opacity || styleOptions.opacity || 0.5;
@@ -168,6 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var div = document.createElement('div');
             div.className = 'form-estilo';
             div.innerHTML = `
+                <b>Polygon</b><br>
+                <label>Fill Color</label>
+                <input type="color" class="form-control" value="${fillColor}" data-key="fill_color" id="fillcolor"><br>
+                <label>Fill Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${fillOpacity}" data-key="fill_opacity" id="fillopacity"><br>
                 <label>Color</label>
                 <input type="color" class="form-control" value="${color}" data-key="color" id="color"><br>
                 <label>Weight</label>
@@ -192,31 +199,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 </select>
             `;
             estiloContent.appendChild(div);
-            div.querySelector('select').addEventListener('change', function() {
-                var key = this.getAttribute('data-key');
-                properties[key] = this.value;
-                var style =({
-                    color: properties.color || styleOptions.color,
-                    weight: properties.weight || styleOptions.weight,
-                    opacity: properties.opacity || styleOptions.opacity,
-                    dashArray: properties.dashArray|| styleOptions.dashArray,
-                    lineCap: properties.lineCap || styleOptions.lineCap,
-                    lineJoin: properties.lineJoin || styleOptions.lineJoin
-                });
-                layer.setStyle(style);
-                layer.feature.properties.estilo = style;
-                updateGeoJSON();
-            });
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     var key = this.getAttribute('data-key');
                     properties[key] = this.value;
-                    console.log (this.value);
-                    var style =({
+                    console.log(this.value);
+                    var style = ({
+                        fillColor: properties.fill_color || styleOptions.fillColor,
+                        fillOpacity: properties.fill_opacity || styleOptions.fillOpacity,
                         color: properties.color || styleOptions.color,
                         weight: properties.weight || styleOptions.weight,
                         opacity: properties.opacity || styleOptions.opacity,
-                        dashArray: properties.dashArray|| styleOptions.dashArray,
+                        dashArray: properties.dashArray || styleOptions.dashArray,
                         lineCap: properties.lineCap || styleOptions.lineCap,
                         lineJoin: properties.lineJoin || styleOptions.lineJoin
                     });
@@ -225,6 +219,114 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateGeoJSON();
                 });
             });
+            div.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', function () {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    var style = {
+                        color: properties.color || styleOptions.color,
+                        weight: properties.weight || styleOptions.weight,
+                        opacity: properties.opacity || styleOptions.opacity,
+                        dashArray: properties.dashArray || styleOptions.dashArray,
+                        lineCap: properties.lineCap || styleOptions.lineCap,
+                        lineJoin: properties.lineJoin || styleOptions.lineJoin
+                    };
+                    layer.setStyle(style);
+                    layer.feature.properties.estilo = style;
+                    updateGeoJSON();
+                });
+            });
+
+        } else if (layer instanceof L.Polyline) {
+            var color = properties.color || styleOptions.color || '#3388ff';
+            var weight = properties.weight || styleOptions.weight || 4;
+            var opacity = properties.opacity || styleOptions.opacity || 0.5;
+            var dashArray = properties.dashArray || styleOptions.dashArray || '5, 5';
+            var lineCap = properties.lineCap || styleOptions.lineCap || 'round';
+            var lineJoin = properties.lineJoin || styleOptions.lineJoin || 'round';
+
+            var div = document.createElement('div');
+            div.className = 'form-estilo';
+            div.innerHTML = `
+                <b>Línea</b><br><label>Color</label>
+                <input type="color" class="form-control" value="${color}" data-key="color" id="color"><br>
+                <label>Weight</label>
+                <input type="number" class="form-control" value="${weight}" data-key="weight" id="weight"><br>
+                <label>Opacity</label>
+                <input type="number" step="0.1" class="form-control" value="${opacity}" data-key="opacity" id="opacity"><br>
+                <label>Dash Array</label>
+                <input type="text" class="form-control" value="${dashArray}" data-key="dashArray" id="dashArray"><br>
+                <label>Line Cap</label>
+                <select class="form-control" data-key="lineCap" id="lineCap">
+                    <option value="${lineCap}" selected>${lineCap}</option>
+                    <option value="butt">Butt</option>
+                    <option value="round">Round</option>
+                    <option value="square">Square</option>
+                </select><br>
+                <label>Line Join</label>
+                <select class="form-control" data-key="lineJoin" id="lineJoin">
+                    <option value="${lineJoin}" selected>${lineJoin}</option>
+                    <option value="miter">Miter</option>
+                    <option value="round">Round</option>
+                    <option value="bevel">Bevel</option>
+                </select>
+            `;
+            estiloContent.appendChild(div);
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', function () {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    console.log(this.value);
+                    var style = ({
+                        color: properties.color || styleOptions.color,
+                        weight: properties.weight || styleOptions.weight,
+                        opacity: properties.opacity || styleOptions.opacity,
+                        dashArray: properties.dashArray || styleOptions.dashArray,
+                        lineCap: properties.lineCap || styleOptions.lineCap,
+                        lineJoin: properties.lineJoin || styleOptions.lineJoin
+                    });
+                    layer.setStyle(style);
+                    layer.feature.properties.estilo = style;
+                    updateGeoJSON();
+                });
+            });
+            div.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', function () {
+                    var key = this.getAttribute('data-key');
+                    properties[key] = this.value;
+                    var style = {
+                        color: properties.color || styleOptions.color,
+                        weight: properties.weight || styleOptions.weight,
+                        opacity: properties.opacity || styleOptions.opacity,
+                        dashArray: properties.dashArray || styleOptions.dashArray,
+                        lineCap: properties.lineCap || styleOptions.lineCap,
+                        lineJoin: properties.lineJoin || styleOptions.lineJoin
+                    };
+                    layer.setStyle(style);
+                    layer.feature.properties.estilo = style;
+                    updateGeoJSON();
+                });
+            });
+
+            /*
+            div.querySelector('select').addEventListener('change', function () {
+                var key = this.getAttribute('data-key');
+                properties[key] = this.value;
+                var style = ({
+                    color: properties.color || styleOptions.color,
+                    weight: properties.weight || styleOptions.weight,
+                    opacity: properties.opacity || styleOptions.opacity,
+                    dashArray: properties.dashArray || styleOptions.dashArray,
+                    lineCap: properties.lineCap || styleOptions.lineCap,
+                    lineJoin: properties.lineJoin || styleOptions.lineJoin
+                });
+                layer.setStyle(style);
+                layer.feature.properties.estilo = style;
+                updateGeoJSON();
+            });
+*/
+
+/*
         } else if (layer instanceof L.Polygon) {
             var color = properties.color || styleOptions.color || '#3388ff';
             var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
@@ -249,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
             estiloContent.appendChild(div);
 
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     var key = this.getAttribute('data-key');
                     properties[key] = this.value;
                     layer.setStyle({
@@ -262,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateGeoJSON();
                 });
             });
+*/
         } else if (layer instanceof L.Circle) {
             var color = properties.color || styleOptions.color || '#3388ff';
             var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
@@ -289,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
             estiloContent.appendChild(div);
 
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     var key = this.getAttribute('data-key');
                     properties[key] = this.value;
                     layer.setStyle({
@@ -322,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGeoJSON();
 
         // Añadir click event
-        layer.on('click', function() {
+        layer.on('click', function () {
             populateDatosContent(layer);
             populateEstiloContent(layer);
         });
@@ -351,11 +454,11 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGeoJSON();
     });
 
-    document.getElementById('save').addEventListener('click', function() {
+    document.getElementById('save').addEventListener('click', function () {
         var geojson = drawnItems.toGeoJSON();
         var mapTitle = document.getElementById('mapTitle').value;
-        
-        geojson.features.forEach(function(feature) {
+
+        geojson.features.forEach(function (feature) {
             feature.properties.mapa = mapTitle;
         });
 
@@ -368,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(geojson)
         }).then(response => response.text())
-          .then(data => alert(data));
+            .then(data => alert(data));
     });
 
     // carga de elementos de mapa
@@ -379,14 +482,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
                         drawnItems.addLayer(layer);
-                        style=layer.feature.properties.estilo ;
+                        style = layer.feature.properties.estilo;
                         layer.setStyle(style);
                         if (layer instanceof L.Polyline) {
                             // crear flechas
                             // addArrowheads(layer);
                         }
                         // Añadir click event
-                        layer.on('click', function() {
+                        layer.on('click', function () {
                             populateDatosContent(layer);
                             populateEstiloContent(layer);
                         });
@@ -398,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.cargarMapa = cargarMapa; // Make cargarMapa globally accessible
 
-    document.getElementById('load').addEventListener('click', function() {
+    document.getElementById('load').addEventListener('click', function () {
         // mostrar listado de mapas disponibles en una ventana modal
         // crear ventana modal
         var modal = document.createElement('div');
@@ -422,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContent.style.padding = '20px';
         modalContent.style.borderRadius = '5px';
         modalContent.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-        
+
 
         // poner un botón para cerrar el modal
         var closeButton = document.createElement('button');
@@ -454,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         modalTitle.style.cursor = 'move'; // Change cursor to move for the title
 
-        modalTitle.addEventListener('mousedown', function(e) {
+        modalTitle.addEventListener('mousedown', function (e) {
             isDragging = true;
             offsetX = e.clientX - modalContent.getBoundingClientRect().left;
             offsetY = e.clientY - modalContent.getBoundingClientRect().top;
@@ -486,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     listItem.className = 'list-group-item';
                     listItem.innerHTML = `${map}`;
                     // cargar el mapa seleccionado al hacer click en él 
-                    listItem.addEventListener('click', function(){
+                    listItem.addEventListener('click', function () {
                         document.getElementById('modal').remove();
                         cargarMapa(map);
                     });
@@ -495,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    document.getElementById('export').addEventListener('click', function() {
+    document.getElementById('export').addEventListener('click', function () {
         var geojson = drawnItems.toGeoJSON();
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
         var downloadAnchorNode = document.createElement('a');
@@ -508,37 +611,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function getTipo(layer){
+function getTipo(layer) {
 
-    
-        // Comprobamos el tipo con instanceof y verificamos propiedades adicionales
-        if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
-            return('Polygon');
-        } else if (layer instanceof L.Polyline) {
-            return('Polyline');
-        } else if (layer instanceof L.Marker) {
-            return('Marker');
-        } else if (layer instanceof L.Circle) {
-            return('Circle');
-        } else if (layer instanceof L.CircleMarker) {
-            return('CircleMarker');
-        } else {
-            return('Unknown');
-        }
-    
-        // Para determinar si un Polyline es un polígono, verificamos si el primer y último punto son iguales
-        // if (layer instanceof L.Polyline) {
-        //     if (layer.getLatLngs().length > 2) {
-        //         const latLngs = layer.getLatLngs();
-        //         const firstPoint = latLngs[0];
-        //         const lastPoint = latLngs[latLngs.length - 1];
-        //         if (firstPoint.equals(lastPoint)) {
-        //             console.log('Polygon (closed Polyline)');
-        //         } else {
-        //             console.log('Polyline (open)');
-        //         }
-        //     }
-        // }
-  
-    
+
+    // Comprobamos el tipo con instanceof y verificamos propiedades adicionales
+    if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+        return ('Polygon');
+    } else if (layer instanceof L.Polyline) {
+        return ('Polyline');
+    } else if (layer instanceof L.Marker) {
+        return ('Marker');
+    } else if (layer instanceof L.Circle) {
+        return ('Circle');
+    } else if (layer instanceof L.CircleMarker) {
+        return ('CircleMarker');
+    } else {
+        return ('Unknown');
+    }
+
+    // Para determinar si un Polyline es un polígono, verificamos si el primer y último punto son iguales
+    // if (layer instanceof L.Polyline) {
+    //     if (layer.getLatLngs().length > 2) {
+    //         const latLngs = layer.getLatLngs();
+    //         const firstPoint = latLngs[0];
+    //         const lastPoint = latLngs[latLngs.length - 1];
+    //         if (firstPoint.equals(lastPoint)) {
+    //             console.log('Polygon (closed Polyline)');
+    //         } else {
+    //             console.log('Polyline (open)');
+    //         }
+    //     }
+    // }
+
+
 }
