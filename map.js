@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function populateEstiloContent(layer) {
         var estiloContent = document.getElementById('tabEstilo-content');
-        estiloContent.innerHTML = 'Adapta tu estilo'; // Clear existing content
+        estiloContent.innerHTML = ''; // Clear existing content
 
         var properties = layer.feature.properties.estilo || {};
         var styleOptions = layer.options || {};
@@ -143,19 +143,56 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add style options based on layer type
         if (layer instanceof L.Marker) {
             var iconUrl = properties.iconUrl || styleOptions.icon.options.iconUrl || '';
+            var rotationAngle = properties.rotationAngle || 0;
             var div = document.createElement('div');
             div.className = 'form-estilo';
             div.innerHTML = `
                 <label>Icon URL</label>
                 <input type="text" class="form-control" value="${iconUrl}" data-key="iconUrl">
+                <label>Rotation Angle</label>  
+                <input type="number" class="form-control" value="${rotationAngle}" data-key="rotationAngle">
+                <label>Marker Gallery</label>
+                <div class="marker-gallery" id="markerGallery"></div>
+                <button class="btn btn-reset">Reset to Default</button>
             `;
             estiloContent.appendChild(div);
 
-            div.querySelector('input').addEventListener('input', function () {
+            // Load marker gallery
+            var markerGallery = document.getElementById('markerGallery');
+            for (var i = 1; i <= 2; i++) {
+                var img = document.createElement('img');
+                img.src = `markers/${i}.png`;
+                img.className = 'marker-icon';
+                img.addEventListener('click', function () {
+                    var iconUrl = this.src;
+                    properties.iconUrl = iconUrl;
+                    layer.setIcon(L.icon({ iconUrl: iconUrl }));
+                    updateGeoJSON();
+                });
+                markerGallery.appendChild(img);
+            }
+
+            div.querySelector('input[data-key="iconUrl"]').addEventListener('input', function () {
                 var key = this.getAttribute('data-key');
                 properties[key] = this.value;
                 layer.setIcon(L.icon({ iconUrl: this.value }));
                 updateGeoJSON();
+            });
+
+            div.querySelector('input[data-key="rotationAngle"]').addEventListener('input', function () {
+                var key = this.getAttribute('data-key');
+                properties[key] = this.value;
+                layer.setRotationAngle(properties.rotationAngle);
+                updateGeoJSON();
+            });
+
+            div.querySelector('.btn-reset').addEventListener('click', function () {
+                layer.setIcon(new L.Icon.Default());
+                properties.iconUrl = '';
+                properties.rotationAngle = 0;
+                layer.setRotationAngle(0);
+                updateGeoJSON();
+                populateEstiloContent(layer); // Refresh the style content
             });
         } else if (layer instanceof L.Polygon) {
             var fillColor = properties.fillColor || styleOptions.fillColor || '#3388ff';
@@ -420,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
         drawnItems.addLayer(layer);
         if (layer instanceof L.Polyline) {
             // crear flechas
-            // addArrowheads(layer);
+            //             addArrowheads(layer);
         }
         updateGeoJSON();
 
@@ -431,20 +468,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // map.on('click', function(e) {
-    //     var clickedOnLayer = false;
-    //     map.eachLayer(function(layer) {
-    //         if (layer instanceof L.Path && layer.getBounds().contains(e.latlng)) {
-    //             populateDatosContent(layer);
-    //             populateEstiloContent(layer);
-    //             clickedOnLayer = true;
-    //         }
-    //     });
-    //     if (!clickedOnLayer) {
-    //         document.getElementById('tabDatos-content').innerHTML = ''; // Clear data content
-    //         document.getElementById('tabEstilo-content').innerHTML = ''; // Clear style content
-    //     }
-    // });
+    map.on('click', function (e) {
+        var clickedOnLayer = false;
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.Path && layer.getBounds().contains(e.latlng)) {
+                populateDatosContent(layer);
+                populateEstiloContent(layer);
+                clickedOnLayer = true;
+            }
+        });
+        if (!clickedOnLayer) {
+            document.getElementById('tabDatos-content').innerHTML = ''; // Clear data content
+            document.getElementById('tabEstilo-content').innerHTML = ''; // Clear style content
+        }
+    });
 
     map.on(L.Draw.Event.EDITED, function () {
         updateGeoJSON();
@@ -482,11 +519,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
                         drawnItems.addLayer(layer);
-                        style = layer.feature.properties.estilo;
-                        layer.setStyle(style);
                         if (layer instanceof L.Polyline) {
-                            // crear flechas
-                            // addArrowheads(layer);
+                            addArrowheads(layer);
+                        }
+                        if (layer.setStyle) {
+                            var style = layer.feature.properties.estilo;
+                            layer.setStyle(style);
+                        } else if (layer.setIcon) {
+                            var iconUrl = layer.feature.properties.estilo.iconUrl;
+                            var rotationAngle = layer.feature.properties.estilo.rotationAngle;
+                            layer.setIcon(L.icon({ iconUrl: iconUrl }));
+                            layer.setRotationAngle(rotationAngle);
                         }
                         // Añadir click event
                         layer.on('click', function () {
