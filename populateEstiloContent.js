@@ -146,7 +146,7 @@ function populateEstiloContent(layer) {
         var dashArray = properties.dashArray || styleOptions.dashArray || '5, 5';
         var lineCap = properties.lineCap || styleOptions.lineCap || 'round';
         var lineJoin = properties.lineJoin || styleOptions.lineJoin || 'round';
-
+        var texto = properties.texto || styleOptions.texto || '';
         var div = document.createElement('div');
         div.className = 'form-estilo';
         div.innerHTML = `
@@ -172,6 +172,9 @@ function populateEstiloContent(layer) {
                 <option value="round">Round</option>
                 <option value="bevel">Bevel</option>
             </select>
+            <label>Texto sobre la línea</label>
+            <input type="text" class="form-control" value="${texto}" data-key="texto" id="texto"><br>
+            
         `;
         estiloContent.appendChild(div);
         div.querySelectorAll('input').forEach(input => {
@@ -185,10 +188,15 @@ function populateEstiloContent(layer) {
                     opacity: properties.opacity || styleOptions.opacity,
                     dashArray: properties.dashArray || styleOptions.dashArray,
                     lineCap: properties.lineCap || styleOptions.lineCap,
-                    lineJoin: properties.lineJoin || styleOptions.lineJoin
+                    lineJoin: properties.lineJoin || styleOptions.lineJoin,
+                    texto: properties.texto || styleOptions.texto
                 });
                 layer.setStyle(style);
                 layer.feature.properties.estilo = style;
+                // añadir el texto si existe
+                if (style.texto){
+                    layer.setText(style.texto,{center:true,});
+                }
                 updateGeoJSON();
             });
         });

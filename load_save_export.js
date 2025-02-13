@@ -34,6 +34,10 @@ function cargarMapa(mapa) {
                     if (layer.setStyle) {
                         var style = layer.feature.properties.estilo;
                         layer.setStyle(style);
+                        // añadir el texto si existe
+                        if (style.texto){
+                            layer.setText(style.texto,{center:true,});
+                        }
                     } else if (layer.setIcon) {
                         var iconUrl = layer.feature.properties.estilo.iconUrl||'';
                         if (iconUrl==''){
