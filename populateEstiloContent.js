@@ -147,10 +147,12 @@ function populateEstiloContent(layer) {
         var lineCap = properties.lineCap || styleOptions.lineCap || 'round';
         var lineJoin = properties.lineJoin || styleOptions.lineJoin || 'round';
         var texto = properties.texto || styleOptions.texto || '';
+        var textcolor = properties.textcolor || styleOptions.textcolor || '#000000';
         var div = document.createElement('div');
         div.className = 'form-estilo';
         div.innerHTML = `
-            <b>Línea</b><br><label>Color</label>
+            <b>Línea</b><br>
+            <label>Color</label>
             <input type="color" class="form-control" value="${color}" data-key="color" id="color"><br>
             <label>Weight</label>
             <input type="number" class="form-control" value="${weight}" data-key="weight" id="weight"><br>
@@ -171,9 +173,11 @@ function populateEstiloContent(layer) {
                 <option value="miter">Miter</option>
                 <option value="round">Round</option>
                 <option value="bevel">Bevel</option>
-            </select>
-            <label>Texto sobre la línea</label>
+            </select><br>
+            <label>Texto sobre la línea (experimental)</label>
             <input type="text" class="form-control" value="${texto}" data-key="texto" id="texto"><br>
+            <label>Color</label>
+            <input type="color" class="form-control" value="${textcolor}" data-key="textcolor" id="textcolor"><br>
             
         `;
         estiloContent.appendChild(div);
@@ -181,6 +185,7 @@ function populateEstiloContent(layer) {
             input.addEventListener('input', function () {
                 var key = this.getAttribute('data-key');
                 properties[key] = this.value;
+                console.log(key);
                 console.log(this.value);
                 var style = ({
                     color: properties.color || styleOptions.color,
@@ -189,14 +194,23 @@ function populateEstiloContent(layer) {
                     dashArray: properties.dashArray || styleOptions.dashArray,
                     lineCap: properties.lineCap || styleOptions.lineCap,
                     lineJoin: properties.lineJoin || styleOptions.lineJoin,
-                    texto: properties.texto || styleOptions.texto
+                    texto: properties.texto || styleOptions.texto,
+                    textcolor: properties.textcolor || styleOptions.textcolor
                 });
+                // añadir el texto si existe "if (style.texto)" no funcionaba
+                if (properties['texto']!=''){
+                    //console.log("hay texto:"+this.value);
+                    //alert ("borrar texto");
+                    layer.setText();
+                    //alert ("añadir texto");
+                    layer.setText(style.texto,{center:true, attributes: {fill: style.textcolor}});
+                }else{
+                    //console.log("no hay texto");
+                    layer.setText();
+                    style.texto='';
+                }
                 layer.setStyle(style);
                 layer.feature.properties.estilo = style;
-                // añadir el texto si existe
-                if (style.texto){
-                    layer.setText(style.texto,{center:true,});
-                }
                 updateGeoJSON();
             });
         });

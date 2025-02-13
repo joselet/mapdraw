@@ -10,9 +10,13 @@ All notable changes to this project will be documented in this file.
 - cambiar el sistema de coordenadas
 - Almacenar los settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...)
 
-## [0.0.8] - 2025-02-12
+## [0.0.9] - 2025-02-13
+### Added
+- Etiquetado en polilineas.
+
+## [0.0.8] - 2025-02-13
 ### Changed
-- Estilo de markers.
+- Revisión inicial del estilo de markers.
 - Separamos ficheros js para tenerlos por temas.
 
 ## [0.0.7] - 2025-02-12
