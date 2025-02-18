@@ -7,16 +7,22 @@ All notable changes to this project will be documented in this file.
 - manejo de estilos de los elementos (resto de elementos)
 - añadir al estilo del marker la posición del ancla.
 - cambiar el sistema de coordenadas
-- Almacenar los settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...)
+- Almacenar y cargarlos settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...) [0.0.11]
+
+
+## [0.0.11] - 2025-02-18
+### Added
+- Preparar Estructura de mapa (configuracion de vista y zoom, overlays existentes, ...). Faltará que al cargar un mapa, se recupere y se aplique toda esa configuracion.
+- Rotación de los textos en relación a la línea que los contiene.
+### Changed
+- Al cargar un Overlay, el zoom se adapta a las dimensiones de ese overlay (solucionar problema CORS)
+
 
 ## [0.0.10] - 2025-02-18
 ### Added
 - Cargar Overlays de WMS.
 ### Changed
 - Ventana modal de configuraciónd del mapa ahora gestiona las otras opciones.
-
-
-
 
 ## [0.0.9] - 2025-02-13
 ### Added

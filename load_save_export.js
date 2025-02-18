@@ -1,5 +1,7 @@
+
+
 document.getElementById('save').addEventListener('click', function () {
-    var geojson = drawnItems.toGeoJSON();
+    var geojson = mapconfig.drawnItems.toGeoJSON();
     var mapTitle = document.getElementById('mapTitle').value;
 
     geojson.features.forEach(function (feature) {
@@ -25,7 +27,7 @@ function cargarMapa(mapa) {
         .then(data => {
             L.geoJSON(data, {
                 onEachFeature: function (feature, layer) {
-                    drawnItems.addLayer(layer);
+                    mapconfig.drawnItems.addLayer(layer);
                     if (layer instanceof L.Polygon) {
                         // no hacer nada, pero así los polígonos no tendrán flechas, ya que también son polilíneas
                     } else if (layer instanceof L.Polyline) {
@@ -36,7 +38,7 @@ function cargarMapa(mapa) {
                         layer.setStyle(style);
                         // añadir el texto si existe
                         if (style.texto){
-                            layer.setText(style.texto,{center:true, attributes: {fill: style.textcolor}});
+                            layer.setText(style.texto,{center:true, orientation:style.textgiro,attributes: {fill: style.textcolor}});
                         }
                     } else if (layer.setIcon) {
                         var iconUrl = layer.feature.properties.estilo.iconUrl||'';
@@ -61,118 +63,11 @@ function cargarMapa(mapa) {
 
 window.cargarMapa = cargarMapa; // Make cargarMapa globally accessible
 
-// document.getElementById('load_old').addEventListener('click', function () {
-//     // mostrar listado de mapas disponibles en una ventana modal
-//     // crear ventana modal
-//     var modal = document.createElement('div');
-//     modal.id = 'modal';
-//     // dar estilo a la ventana modal desde jquery
-//     modal.style.position = 'fixed';
-//     modal.style.top = '0';
-//     modal.style.left = '0';
-//     modal.style.width = '100%';
-//     modal.style.height = '100%';
-//     modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-//     modal.style.display = 'flex';
-//     modal.style.justifyContent = 'center';
-//     modal.style.alignItems = 'center';
-//     modal.style.zIndex = '1000';
-
-//     // crear contenedor interno para el contenido del modal
-//     var modalContent = document.createElement('div');
-//     modalContent.style.position = 'relative';
-//     modalContent.style.backgroundColor = 'white';
-//     modalContent.style.padding = '20px';
-//     modalContent.style.borderRadius = '5px';
-//     modalContent.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
 
 
-//     // poner un botón para cerrar el modal
-//     var closeButton = document.createElement('button');
-//     closeButton.innerHTML = '&times;';
-//     closeButton.style.position = 'absolute';
-//     closeButton.style.top = '10px';
-//     closeButton.style.right = '10px';
-//     closeButton.style.backgroundColor = 'transparent';
-//     closeButton.style.color = 'black';
-//     closeButton.style.border = 'none';
-//     closeButton.style.fontSize = '20px';
-//     closeButton.style.cursor = 'pointer';
-//     closeButton.setAttribute('onclick', 'document.getElementById("modal").remove()'); // Add onclick attribute
-//     modalContent.appendChild(closeButton);
-
-//     // asignar este div a la ventana modal
-//     var html = `<h3 id="modalTitle">Añadir contenido de otro mapa&nbsp;</h3>
-//                 <div class="map-list">
-//                     <ul id="mapList" class="list-group"></ul>
-//                 </div>`;
-//     modalContent.innerHTML += html; // Use += to append the HTML without overwriting the close button
-//     modal.appendChild(modalContent);
-//     document.body.appendChild(modal);
-
-//     // hacer la ventana modal arrastrable solo desde el título
-//     var isDragging = false;
-//     var offsetX, offsetY;
-//     var modalTitle = document.getElementById('modalTitle');
-
-//     modalTitle.style.cursor = 'move'; // Change cursor to move for the title
-
-//     modalTitle.addEventListener('mousedown', function (e) {
-//         isDragging = true;
-//         offsetX = e.clientX - modalContent.getBoundingClientRect().left;
-//         offsetY = e.clientY - modalContent.getBoundingClientRect().top;
-//         document.addEventListener('mousemove', onMouseMove);
-//         document.addEventListener('mouseup', onMouseUp);
-//     });
-
-//     function onMouseMove(e) {
-//         if (isDragging) {
-//             modalContent.style.left = (e.clientX - offsetX) + 'px';
-//             modalContent.style.top = (e.clientY - offsetY) + 'px';
-//             modalContent.style.position = 'absolute';
-//         }
-//     }
-
-//     function onMouseUp() {
-//         isDragging = false;
-//         document.removeEventListener('mousemove', onMouseMove);
-//         document.removeEventListener('mouseup', onMouseUp);
-//     }
-
-//     // cargar los mapas disponibles   
-//     fetch('list_maps.php')
-//         .then(response => response.json())
-//         .then(data => {
-//             const mapList = document.getElementById('mapList');
-//             data.forEach(map => {
-//                 const listItem = document.createElement('li');
-//                 listItem.className = 'list-group-item';
-//                 listItem.innerHTML = `${map}`;
-//                 // cargar el mapa seleccionado al hacer click en él 
-//                 listItem.addEventListener('click', function () {
-//                     document.getElementById('modal').remove();
-//                     cargarMapa(map);
-//                 });
-//                 mapList.appendChild(listItem);
-//             });
-//         });
-// });
-
-// document.getElementById('export').addEventListener('click', function () {
-//     var geojson = drawnItems.toGeoJSON();
-//     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
-//     var downloadAnchorNode = document.createElement('a');
-//     downloadAnchorNode.setAttribute("href", dataStr);
-//     downloadAnchorNode.setAttribute("download", "map_data.geojson");
-//     document.body.appendChild(downloadAnchorNode); // required for firefox
-//     downloadAnchorNode.click();
-//     downloadAnchorNode.remove();
-// });
-
-var addedOverlays = {};
 
 document.getElementById('config').addEventListener('click', function () {
-    // mostrar listado de mapas disponibles en una ventana modal
+    console.log(mapconfig);
     // crear ventana modal
     var modal = document.createElement('div');
     modal.id = 'modal-config';
@@ -210,7 +105,7 @@ document.getElementById('config').addEventListener('click', function () {
     closeButton.setAttribute('onclick', 'document.getElementById("modal-config").remove()'); // Add onclick attribute
     modalContent.appendChild(closeButton);
 
-    // asignar este div a la ventana modal
+    // opciones del menú de configuracion de mapa
     var html = `<h3 id="modalTitle">Configuración del mapa</h3>
                 <button id="load" class="btn btn-info">Cargar Redline de otro mapa</button>
                 <button id="loadOverlay" class="btn btn-secondary">Gestión de Overlay</button>
@@ -375,14 +270,14 @@ document.getElementById('config').addEventListener('click', function () {
                 });
 
                 // Add already added overlays to the list
-                for (const [title, layer] of Object.entries(addedOverlays)) {
+                for (const [title, layer] of Object.entries(mapconfig.addedOverlays)) {
                     const listItem = document.createElement('a');
                     listItem.className = 'list-group-item list-group-item-action';
                     listItem.innerHTML = `${title}`;
                     listItem.addEventListener('click', function () {
                         // Remove the overlay from the map
                         map.removeLayer(layer);
-                        delete addedOverlays[title];
+                        delete mapconfig.addedOverlays[title];
                         listItem.remove();
                     });
                     overlayListCargados.appendChild(listItem);
@@ -391,7 +286,7 @@ document.getElementById('config').addEventListener('click', function () {
     });
 
     document.getElementById('export').addEventListener('click', function () {
-        var geojson = drawnItems.toGeoJSON();
+        var geojson = mapconfig.drawnItems.toGeoJSON();
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
         var downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
@@ -403,8 +298,35 @@ document.getElementById('config').addEventListener('click', function () {
 });
 
 function cargarOverlay(overlay) {
-    // Implement the logic to load the overlay
-    console.log("Cargar overlay: " + overlay.cadena_wms);
+
+    // Obtener los bounds del wms a añadir
+    fetch(overlay.cadena_wms+'&service=WMS&version=1.3.0&request=GetCapabilities')
+    .then(response => response.text())
+    .then(xmlText => {
+        // procesar el XML y extraer los límites
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+      
+        // Buscar los elementos BoundingBox
+        const boundingBox = xmlDoc.querySelector('BoundingBox[SRS="EPSG:4326"]');
+        
+        if (boundingBox) {
+          const minx = parseFloat(boundingBox.getAttribute('minx'));
+          const miny = parseFloat(boundingBox.getAttribute('miny'));
+          const maxx = parseFloat(boundingBox.getAttribute('maxx'));
+          const maxy = parseFloat(boundingBox.getAttribute('maxy'));
+      
+          // Crear el objeto bounds
+          const bounds = [[miny, minx], [maxy, maxx]];
+      
+          // Ahora puedes adaptar tu mapa de Leaflet a esos bounds
+          map.fitBounds(bounds);
+        } else {
+          console.error('No se encontraron los bounds en el servicio WMS.');
+        }
+    })
+    .catch(error => console.error('Error al obtener GetCapabilities:', error));
+
     // añadir wms al mapa leaflet
     var wmsLayer = L.tileLayer.wms(overlay.cadena_wms, {
         layers: overlay.capas,
@@ -413,7 +335,7 @@ function cargarOverlay(overlay) {
     }).addTo(map);
 
     // Add to the list of added overlays
-    addedOverlays[overlay.titulo] = wmsLayer;
+    mapconfig.addedOverlays[overlay.titulo] = wmsLayer;
 
     // Add to the overlay list in the UI
     var overlayListCargados = document.getElementById('overlayListCargados');
@@ -424,8 +346,13 @@ function cargarOverlay(overlay) {
     listItem.addEventListener('click', function () {
         // Remove the overlay from the map
         map.removeLayer(wmsLayer);
-        delete addedOverlays[overlay.titulo];
+        delete mapconfig.addedOverlays[overlay.titulo];
         listItem.remove();
     });
     overlayListCargados.appendChild(listItem);
 }
+
+
+
+
+

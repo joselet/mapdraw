@@ -147,6 +147,7 @@ function populateEstiloContent(layer) {
         var lineCap = properties.lineCap || styleOptions.lineCap || 'round';
         var lineJoin = properties.lineJoin || styleOptions.lineJoin || 'round';
         var texto = properties.texto || styleOptions.texto || '';
+        var textgiro = properties.textgiro || styleOptions.textgiro || 0;  
         var textcolor = properties.textcolor || styleOptions.textcolor || '#000000';
         var div = document.createElement('div');
         div.className = 'form-estilo';
@@ -176,6 +177,8 @@ function populateEstiloContent(layer) {
             </select><br>
             <label>Texto sobre la línea (experimental)</label>
             <input type="text" class="form-control" value="${texto}" data-key="texto" id="texto"><br>
+            <label>Ángulo de rotación del texto</label>
+            <input type="number" class="form-control" value="${textgiro}" data-key="textgiro" id="textgiro"><br>
             <label>Color</label>
             <input type="color" class="form-control" value="${textcolor}" data-key="textcolor" id="textcolor"><br>
             
@@ -195,6 +198,7 @@ function populateEstiloContent(layer) {
                     lineCap: properties.lineCap || styleOptions.lineCap,
                     lineJoin: properties.lineJoin || styleOptions.lineJoin,
                     texto: properties.texto || styleOptions.texto,
+                    textgiro: properties.textgiro || styleOptions.textgiro,
                     textcolor: properties.textcolor || styleOptions.textcolor
                 });
                 // añadir el texto si existe "if (style.texto)" no funcionaba
@@ -203,7 +207,7 @@ function populateEstiloContent(layer) {
                     //alert ("borrar texto");
                     layer.setText();
                     //alert ("añadir texto");
-                    layer.setText(style.texto,{center:true, attributes: {fill: style.textcolor}});
+                    layer.setText(style.texto,{center:true, orientation:style.textgiro, attributes: {fill: style.textcolor}});
                 }else{
                     //console.log("no hay texto");
                     layer.setText();
