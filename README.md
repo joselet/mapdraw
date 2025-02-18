@@ -7,4 +7,14 @@ CREATE TABLE map_features (
     estilo TEXT,
     datos TEXT
 );
+
+CREATE TABLE map_conexiones (
+    id SERIAL PRIMARY KEY,
+    titulo TEXT,
+    descripcion TEXT,
+    cadena_wms TEXT,
+    capas TEXT
+);
+
+
 ```

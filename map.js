@@ -1,4 +1,5 @@
 var drawnItems = new L.FeatureGroup();
+var map = L.map('map').setView([40.4168, -3.7038], 6); // Centro en España
 
 
 
@@ -12,7 +13,6 @@ function updateGeoJSON() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    var map = L.map('map').setView([40.4168, -3.7038], 6); // Centro en España
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'

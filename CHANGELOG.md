@@ -6,9 +6,17 @@ All notable changes to this project will be documented in this file.
 - gestión de mapas por usuario (actualmente todos los mapas son para todos los usuarios)
 - manejo de estilos de los elementos (resto de elementos)
 - añadir al estilo del marker la posición del ancla.
-- cargar servicios WMS en background
 - cambiar el sistema de coordenadas
 - Almacenar los settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...)
+
+## [0.0.10] - 2025-02-18
+### Added
+- Cargar Overlays de WMS.
+### Changed
+- Ventana modal de configuraciónd del mapa ahora gestiona las otras opciones.
+
+
+
 
 ## [0.0.9] - 2025-02-13
 ### Added
