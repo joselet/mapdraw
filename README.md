@@ -16,5 +16,12 @@ CREATE TABLE map_conexiones (
     capas TEXT
 );
 
+CREATE TABLE map_configs (
+    id SERIAL PRIMARY KEY,
+    mapa TEXT UNIQUE,
+    usuario TEXT,
+    clave TEXT,
+    config TEXT
+);
 
 ```

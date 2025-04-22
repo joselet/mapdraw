@@ -1,5 +1,5 @@
 var mapconfig = {
-    view: { //España
+    view: { //Posición del mapa inicial
         lat: 40.4168,
         lng: -3.7038,
         zoom: 6
@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateDatosContent(layer);
                 populateEstiloContent(layer);
                 clickedOnLayer = true;
+                maximiza();
             }
         });
         if (!clickedOnLayer) {

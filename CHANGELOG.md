@@ -7,8 +7,13 @@ All notable changes to this project will be documented in this file.
 - manejo de estilos de los elementos (resto de elementos)
 - añadir al estilo del marker la posición del ancla.
 - cambiar el sistema de coordenadas
-- Almacenar y cargarlos settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...) [0.0.11]
+- Almacenar y cargarlos settings del mapa (servicios WMS cargados, sistema de coordenadas... zoom y posición...) 
 
+
+
+## [0.0.12] - 2025-02-24
+### Added
+- libreria jquery (aunque de momento no se utiliza)
 
 ## [0.0.11] - 2025-02-18
 ### Added

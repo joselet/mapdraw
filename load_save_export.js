@@ -1,5 +1,3 @@
-
-
 document.getElementById('save').addEventListener('click', function () {
     var geojson = mapconfig.drawnItems.toGeoJSON();
     var mapTitle = document.getElementById('mapTitle').value;
@@ -65,6 +63,66 @@ window.cargarMapa = cargarMapa; // Make cargarMapa globally accessible
 
 
 
+// nueva funcion save (adaptar, porque falta comprobar que ejecuta todo el código de la función document.getElementById('save').addEventListener('click', function ())
+function saveMap() {
+    var geojson = mapconfig.drawnItems.toGeoJSON();
+    var config = {
+        view: mapconfig.view,
+        addedOverlays: mapconfig.addedOverlays
+    };
+
+    fetch('save.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            features: geojson.features,
+            config: config
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+// nueva funcion load (adaptar, porque falta comprobar que ejecuta todo el código de la función cargamapa anterior)
+function loadMap(mapa) {
+    fetch(`load.php?mapa=${mapa}`)
+    .then(response => response.json())
+    .then(data => {
+        mapconfig.drawnItems.clearLayers();
+        L.geoJSON(data.features, {
+            onEachFeature: function (feature, layer) {
+                mapconfig.drawnItems.addLayer(layer);
+                layer.on('click', function () {
+                    populateDatosContent(layer);
+                    populateEstiloContent(layer);
+                });
+            }
+        });
+
+        if (data.config) {
+            mapconfig.view = data.config.view;
+            mapconfig.addedOverlays = data.config.addedOverlays;
+            map.setView([mapconfig.view.lat, mapconfig.view.lng], mapconfig.view.zoom);
+            // Load overlays if any
+            for (var overlay in mapconfig.addedOverlays) {
+                if (mapconfig.addedOverlays.hasOwnProperty(overlay)) {
+                    // Add overlay to map
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 document.getElementById('config').addEventListener('click', function () {
     console.log(mapconfig);

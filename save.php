@@ -8,9 +8,13 @@ $conn = new PDO($dsn, $db_user, $db_password);
 
 if (!empty($data['features'])) {
     $mapa = $data['features'][0]['properties']['mapa'] ?? '';
+    $config = json_encode($data['config'] ?? []);
 
     // Eliminar datos existentes del mapa
     $stmt = $conn->prepare("DELETE FROM map_features WHERE mapa = :mapa");
+    $stmt->execute(['mapa' => $mapa]);
+
+    $stmt = $conn->prepare("DELETE FROM map_configs WHERE mapa = :mapa");
     $stmt->execute(['mapa' => $mapa]);
 
     // Insertar nuevos datos
@@ -27,6 +31,13 @@ if (!empty($data['features'])) {
             'geometry' => $geometry
         ]);
     }
+
+    // Insertar configuración del mapa
+    $stmt = $conn->prepare("INSERT INTO map_configs (mapa, config) VALUES (:mapa, :config)");
+    $stmt->execute([
+        'mapa' => $mapa,
+        'config' => $config
+    ]);
 }
 
 echo "Datos guardados correctamente.";

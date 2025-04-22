@@ -1,3 +1,15 @@
+let lastExpandedWidth = 400; // Default expanded width
+
+function maximiza(){
+    menuContainer.style.width = lastExpandedWidth + 'px';
+    menuTab.innerHTML = '&gt;';
+}
+function minimiza(){
+    lastExpandedWidth = menuContainer.style.width.replace('px', '');
+    menuContainer.style.width = '10px';
+    menuTab.innerHTML = '&lt;';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const mapa = urlParams.get('mapa');
@@ -9,16 +21,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuContainer = document.getElementById('menuContainer');
     const menuTab = document.getElementById('menuTab');
     const menuContainerSizer = document.getElementById('menuContainerSizer');
-    let lastExpandedWidth = 400; // Default expanded width
     // desplegar y plegar el contenedor de menú
     menuTab.addEventListener('click', function() {
         if (menuContainer.style.width === '10px') {
-            menuContainer.style.width = lastExpandedWidth + 'px';
-            menuTab.innerHTML = '&gt;';
+            maximiza();
         } else {
-            lastExpandedWidth = menuContainer.style.width.replace('px', '');
-            menuContainer.style.width = '10px';
-            menuTab.innerHTML = '&lt;';
+            minimiza();
         }
     });
     // redimensionar el contenedor de menú

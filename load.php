@@ -22,5 +22,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     ];
 }
 
-echo json_encode(['type' => 'FeatureCollection', 'features' => $features]);
+$stmt = $conn->prepare("SELECT config FROM map_configs WHERE mapa = :mapa");
+$stmt->bindParam(':mapa', $mapa);
+$stmt->execute();
+$config = $stmt->fetch(PDO::FETCH_ASSOC)['config'];
+
+echo json_encode(['type' => 'FeatureCollection', 'features' => $features, 'config' => json_decode($config)]);
 ?>
